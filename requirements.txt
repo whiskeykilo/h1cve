@@ -1,2 +1,6 @@
 tweepy
 requests
+json
+os
+datetime
+python-dotenv
