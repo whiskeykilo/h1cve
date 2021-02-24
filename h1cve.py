@@ -10,11 +10,11 @@ from time import sleep
 # get environment variables from .env
 load_dotenv()
 
-# try the OS variables just in case (for Heroku)
-consumer_key = os.getenv("API_KEY")
-consumer_secret_key = os.getenv("API_SECRET_KEY")
-access_token = os.getenv("ACCESS_TOKEN")
-access_token_secret = os.getenv("ACCESS_TOKEN_SECRET")
+# try the OS variables (just in case for Heroku)
+consumer_key = os.environ.get("API_KEY")
+consumer_secret_key = os.environ.get("API_SECRET_KEY")
+access_token = os.environ.get("ACCESS_TOKEN")
+access_token_secret = os.environ.get("ACCESS_TOKEN_SECRET")
 
 # Authenticate to Twitter
 auth = tweepy.OAuthHandler(consumer_key, consumer_secret_key)
