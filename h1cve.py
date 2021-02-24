@@ -46,9 +46,11 @@ def get_cves():
     This function pulls CVEs from NVD in the specified time period and order
     :return: It returns a list
     """
+    print("about to fetch CVEs")
     response = requests.get(api_url, params=params)
     global id_list
     id_list = json_extract(response.json(), "ID")
+    print("fetched CVEs")
 
 
 def tweet_cves():
@@ -56,19 +58,19 @@ def tweet_cves():
     This function updates the Twitter timeline with discovered CVEs
     :return: It has no return value
     """
+    print("printing CVEs found here:")
     for i in id_list:
         tweet = i + " reported via @Hacker0x01 has been published: " + site_url + i
         try:
             twitta.update_status(tweet)
-            print(tweet)  # for testing
+            print("tweeted this one:" + tweet)  # for testing
             sleep(3)
         except tweepy.error.TweepError:
-            print("Tweepy exception")
+            print("tweepy error")
             pass
 
 
 if __name__ == "__main__":
     get_cves()
-    print("got CVEs")
     tweet_cves()
-    print("CVEs tweeted")
+    print("done")
