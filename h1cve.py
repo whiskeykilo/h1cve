@@ -23,7 +23,7 @@ twitta = tweepy.API(auth)
 
 # get current time and adjust timedelta to script cron period
 adjusted_date_time = datetime.now() - timedelta(hours=1)
-#adjusted_date_time = datetime.now() - timedelta(days=2)  # for testing
+# adjusted_date_time = datetime.now() - timedelta(days=2)  # for testing
 nvd_date_time = adjusted_date_time.strftime(
     "%Y-%m-%dT%H:%M:%S:000 UTC-05:00"
 )  # NVD API needs: yyyy-MM-dd'T'HH:mm:ss:SSS z
@@ -60,7 +60,7 @@ def tweet_cves():
         tweet = i + " reported via @Hacker0x01 has been published: " + site_url + i
         try:
             twitta.update_status(tweet)
-            #print(tweet)  # for testing
+            print(tweet)  # for testing
             sleep(3)
         except tweepy.error.TweepError:
             pass
