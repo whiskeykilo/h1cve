@@ -63,9 +63,12 @@ def tweet_cves():
             print(tweet)  # for testing
             sleep(3)
         except tweepy.error.TweepError:
+            print("Tweepy exception")
             pass
 
 
 if __name__ == "__main__":
     get_cves()
+    print("got CVEs")
     tweet_cves()
+    print("CVEs tweeted")
