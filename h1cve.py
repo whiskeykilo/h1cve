@@ -23,7 +23,7 @@ twitta = tweepy.API(auth)
 
 # get current time and adjust timedelta to script cron period
 adjusted_date_time = datetime.now() - timedelta(hours=1)
-# adjusted_date_time = datetime.now() - timedelta(days=2)  # for testing
+# adjusted_date_time = datetime.now() - timedelta(days=3)  # for testing
 nvd_date_time = adjusted_date_time.strftime(
     "%Y-%m-%dT%H:%M:%S:000 UTC-05:00"
 )  # NVD API needs: yyyy-MM-dd'T'HH:mm:ss:SSS z
@@ -46,11 +46,16 @@ def get_cves():
     This function pulls CVEs from NVD in the specified time period and order
     :return: It returns a list
     """
-    print("about to fetch CVEs")
+    print("grabbing CVEs")
     response = requests.get(api_url, params=params)
-    global id_list
+
+    # parse the json response
+    global master_dict
     id_list = json_extract(response.json(), "ID")
-    print("fetched CVEs")
+    url_list = json_extract(response.json(), "url")
+    h1_url_list = [i for i in url_list if "hackerone" in i]
+    master_dict = dict(zip(id_list, h1_url_list))
+    print("got CVEs")
 
 
 def tweet_cves():
@@ -58,12 +63,19 @@ def tweet_cves():
     This function updates the Twitter timeline with discovered CVEs
     :return: It has no return value
     """
-    print("printing CVEs found here:")
-    for i in id_list:
-        tweet = i + " reported via @Hacker0x01 has been published: " + site_url + i
+    print("printing CVEs found here:\n")
+    for cve, h1_url in master_dict.items():
+        tweet = (
+            cve
+            + " reported via @Hacker0x01 has been published: "
+            + site_url
+            + cve
+            + "\r\n\r\n"
+            + h1_url
+        )
         try:
             twitta.update_status(tweet)
-            print("tweeted this one:" + tweet)  # for testing
+            print(tweet)  # for testing
             sleep(3)
         except tweepy.error.TweepError:
             print("tweepy error")
@@ -73,4 +85,4 @@ def tweet_cves():
 if __name__ == "__main__":
     get_cves()
     tweet_cves()
-    print("done")
+    print("\ndone")
