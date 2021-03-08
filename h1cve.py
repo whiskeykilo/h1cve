@@ -22,7 +22,7 @@ auth.set_access_token(access_token, access_token_secret)
 twitta = tweepy.API(auth)
 
 # get current time and adjust timedelta to script cron period
-adjusted_date_time = datetime.now() - timedelta(hours=12)
+adjusted_date_time = datetime.now() - timedelta(hours=24)
 
 nvd_date_time = adjusted_date_time.strftime(
     "%Y-%m-%dT%H:%M:%S:000 UTC-05:00"
@@ -53,7 +53,6 @@ def get_cves():
         print("NVD API status code: " + str(response.status_code))
     except requests.exceptions.HTTPError as errh:
         print("HTTP Error:", errh)
-        pass
     except requests.exceptions.ConnectionError as errc:
         print("Error Connecting:", errc)
     except requests.exceptions.Timeout as errt:
