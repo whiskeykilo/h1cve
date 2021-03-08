@@ -6,6 +6,8 @@ from datetime import datetime, timedelta
 from dotenv import load_dotenv
 from extract import json_extract
 from time import sleep
+from requests.adapters import HTTPAdapter
+from urllib3.util import Retry
 
 # get environment variables from .env
 load_dotenv()
@@ -41,16 +43,38 @@ params = {
 }
 
 
+# Retry request function. NVD API can be rather unresponsive
+def requests_retry_session(
+    retries=10,
+    backoff_factor=0.5,
+    status_forcelist=(500, 502, 504),
+    session=None,
+):
+    session = session or requests.Session()
+    retry = Retry(
+        total=retries,
+        read=retries,
+        connect=retries,
+        backoff_factor=backoff_factor,
+        status_forcelist=status_forcelist,
+    )
+    adapter = HTTPAdapter(max_retries=retry)
+    session.mount("http://", adapter)
+    session.mount("https://", adapter)
+    return session
+
+
 def get_cves():
     """
     This function pulls CVEs from NVD in the specified time period and order
     :return: It returns a list
     """
-    print("starting get_CVEs")
+    print("starting get_CVEs\n")
+
     try:
-        response = requests.get(api_url, params=params, timeout=10)
+        response = requests_retry_session().get(api_url, params=params, timeout=10)
         response.raise_for_status()
-        print("NVD API status code: " + str(response.status_code))
+        print("NVD API status code: " + str(response.status_code) + "\n")
     except requests.exceptions.HTTPError as errh:
         print("HTTP Error:", errh)
     except requests.exceptions.ConnectionError as errc:
@@ -66,7 +90,7 @@ def get_cves():
     url_list = json_extract(response.json(), "url")
     h1_url_list = [i for i in url_list if "hackerone" in i]
     master_dict = dict(zip(id_list, h1_url_list))
-    print("end get_CVEs\n\n")
+    print("end get_CVEs\n")
 
 
 def tweet_cves():
