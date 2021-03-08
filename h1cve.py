@@ -22,7 +22,7 @@ auth.set_access_token(access_token, access_token_secret)
 twitta = tweepy.API(auth)
 
 # get current time and adjust timedelta to script cron period
-adjusted_date_time = datetime.now() - timedelta(days=1)
+adjusted_date_time = datetime.now() - timedelta(hours=12)
 
 nvd_date_time = adjusted_date_time.strftime(
     "%Y-%m-%dT%H:%M:%S:000 UTC-05:00"
@@ -37,7 +37,7 @@ params = {
     "keyword": "hackerone",  # search for keyword "hackerone"
     "startIndex": 0,  # start at most recent CVEs
     "resultsPerPage": 50,  # page big enough for all results at once
-    "pubStartDate": nvd_date_time
+    "pubStartDate": nvd_date_time,
 }
 
 
@@ -52,14 +52,14 @@ def get_cves():
         response.raise_for_status()
         print("NVD API status code: " + str(response.status_code))
     except requests.exceptions.HTTPError as errh:
-        print ("HTTP Error:", errh)
+        print("HTTP Error:", errh)
         pass
     except requests.exceptions.ConnectionError as errc:
-        print ("Error Connecting:", errc)
+        print("Error Connecting:", errc)
     except requests.exceptions.Timeout as errt:
-        print ("Timeout Error:", errt)
+        print("Timeout Error:", errt)
     except requests.exceptions.RequestException as err:
-        print ("OOps: Something Else", err)
+        print("OOps: Something Else", err)
 
     # parse the json response
     global master_dict
