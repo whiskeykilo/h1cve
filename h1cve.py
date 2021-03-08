@@ -48,7 +48,7 @@ def get_cves():
     """
     print("starting get_CVEs")
     try:
-        response = requests.get(api_url, params=params, timeout=5)
+        response = requests.get(api_url, params=params, timeout=10)
         response.raise_for_status()
         print("NVD API status code: " + str(response.status_code))
     except requests.exceptions.HTTPError as errh:
