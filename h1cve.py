@@ -22,8 +22,8 @@ auth.set_access_token(access_token, access_token_secret)
 twitta = tweepy.API(auth)
 
 # get current time and adjust timedelta to script cron period
-adjusted_date_time = datetime.now() - timedelta(hours=1)
-# adjusted_date_time = datetime.now() - timedelta(days=3)  # for testing
+adjusted_date_time = datetime.now() - timedelta(days=1)
+
 nvd_date_time = adjusted_date_time.strftime(
     "%Y-%m-%dT%H:%M:%S:000 UTC-05:00"
 )  # NVD API needs: yyyy-MM-dd'T'HH:mm:ss:SSS z
@@ -37,7 +37,7 @@ params = {
     "keyword": "hackerone",  # search for keyword "hackerone"
     "startIndex": 0,  # start at most recent CVEs
     "resultsPerPage": 50,  # page big enough for all results at once
-    "pubStartDate": nvd_date_time,
+    "pubStartDate": nvd_date_time
 }
 
 
@@ -46,8 +46,20 @@ def get_cves():
     This function pulls CVEs from NVD in the specified time period and order
     :return: It returns a list
     """
-    print("grabbing CVEs")
-    response = requests.get(api_url, params=params)
+    print("starting get_CVEs")
+    try:
+        response = requests.get(api_url, params=params, timeout=5)
+        response.raise_for_status()
+        print("NVD API status code: " + str(response.status_code))
+    except requests.exceptions.HTTPError as errh:
+        print ("HTTP Error:", errh)
+        pass
+    except requests.exceptions.ConnectionError as errc:
+        print ("Error Connecting:", errc)
+    except requests.exceptions.Timeout as errt:
+        print ("Timeout Error:", errt)
+    except requests.exceptions.RequestException as err:
+        print ("OOps: Something Else", err)
 
     # parse the json response
     global master_dict
@@ -55,7 +67,7 @@ def get_cves():
     url_list = json_extract(response.json(), "url")
     h1_url_list = [i for i in url_list if "hackerone" in i]
     master_dict = dict(zip(id_list, h1_url_list))
-    print("got CVEs")
+    print("end get_CVEs\n\n")
 
 
 def tweet_cves():
@@ -75,7 +87,7 @@ def tweet_cves():
         )
         try:
             twitta.update_status(tweet)
-            print(tweet)  # for testing
+            print(tweet)
             sleep(3)
         except tweepy.error.TweepError:
             print("tweepy error")
