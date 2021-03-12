@@ -24,7 +24,7 @@ auth.set_access_token(access_token, access_token_secret)
 twitta = tweepy.API(auth)
 
 # get current time and adjust timedelta to script cron period
-adjusted_date_time = datetime.now() - timedelta(hours=1)
+adjusted_date_time = datetime.now() - timedelta(hours=24)
 
 nvd_date_time = adjusted_date_time.strftime(
     "%Y-%m-%dT%H:%M:%S:000 UTC-05:00"
