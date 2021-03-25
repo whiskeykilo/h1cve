@@ -112,8 +112,8 @@ def tweet_cves():
             twitta.update_status(tweet)
             print(tweet)
             sleep(2)
-        except tweepy.error.TweepError:
-            print("tweepy error")
+        except tweepy.TweepError as e:
+            print('Twitter error: ', e.response.text)
             pass
 
 
