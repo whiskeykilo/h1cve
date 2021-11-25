@@ -29,7 +29,11 @@ twitta = tweepy.API(auth)
 datetime_now = datetime.now()
 adjusted_date_time = datetime_now - timedelta(hours=1)
 
-nvd_date_time = adjusted_date_time.strftime(
+nvd_datetime = adjusted_date_time.strftime(
+    "%Y-%m-%dT%H:%M:%S:000 UTC-05:00"
+)  # NVD API needs: yyyy-MM-dd'T'HH:mm:ss:SSS z
+
+nvd_datetime_now = datetime_now.strftime(
     "%Y-%m-%dT%H:%M:%S:000 UTC-05:00"
 )  # NVD API needs: yyyy-MM-dd'T'HH:mm:ss:SSS z
 
@@ -42,8 +46,8 @@ params = {
     "keyword": "hackerone",  # search for keyword "hackerone"
     "startIndex": 0,  # start at most recent CVEs
     "resultsPerPage": 50,  # page big enough for all results at once
-    "pubStartDate": nvd_date_time,
-    "pubEndDate": datetime_now,
+    "pubStartDate": nvd_datetime,
+    "pubEndDate": nvd_datetime_now,
 }
 
 
