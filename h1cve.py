@@ -1,13 +1,15 @@
-import tweepy
-import requests
-import json
+"""
+Script that pulls H1 related results from NVD references and post them on Twitter
+"""
 import os
 from datetime import datetime, timedelta
-from dotenv import load_dotenv
-from extract import json_extract
 from time import sleep
+import requests
+from dotenv import load_dotenv
+import tweepy
 from requests.adapters import HTTPAdapter
 from urllib3.util import Retry
+from extract import json_extract
 
 # get environment variables from .env
 load_dotenv()
@@ -32,8 +34,8 @@ nvd_date_time = adjusted_date_time.strftime(
 )  # NVD API needs: yyyy-MM-dd'T'HH:mm:ss:SSS z
 
 # National Vulnerability Database (NVD) API documented here: https://bit.ly/3bqcxYk
-api_url = "https://services.nvd.nist.gov/rest/json/cves/1.0"
-site_url = "https://nvd.nist.gov/vuln/detail/"
+API_URL = "https://services.nvd.nist.gov/rest/json/cves/1.0"
+SITE_URL = "https://nvd.nist.gov/vuln/detail/"
 
 # NVD API search parameters
 params = {
@@ -45,13 +47,15 @@ params = {
 }
 
 
-# Retry request function. NVD API can be rather unresponsive
 def requests_retry_session(
     retries=10,
     backoff_factor=0.5,
     status_forcelist=(500, 502, 504),
     session=None,
 ):
+    """
+    Retry request function. NVD API can be rather unresponsive
+    """
     session = session or requests.Session()
     retry = Retry(
         total=retries,
@@ -74,7 +78,7 @@ def get_cves():
     print("starting get_CVEs\n")
 
     try:
-        response = requests_retry_session().get(api_url, params=params, timeout=10)
+        response = requests_retry_session().get(API_URL, params=params, timeout=10)
         response.raise_for_status()
         print("NVD API status code: " + str(response.status_code) + "\n")
     except requests.exceptions.HTTPError as errh:
@@ -87,11 +91,11 @@ def get_cves():
         print("OOps: Something Else", err)
 
     # parse the json response
-    global master_dict
+    global MASTER_DICT
     id_list = json_extract(response.json(), "ID")
     url_list = json_extract(response.json(), "url")
     h1_url_list = [i for i in url_list if "hackerone" in i]
-    master_dict = dict(zip(id_list, h1_url_list))
+    MASTER_DICT = dict(zip(id_list, h1_url_list))
     print("end get_CVEs\n")
 
 
@@ -101,11 +105,11 @@ def tweet_cves():
     :return: It has no return value
     """
     print("printing CVEs found here:\n")
-    for cve, h1_url in master_dict.items():
+    for cve, h1_url in MASTER_DICT.items():
         tweet = (
             cve
             + " reported via @Hacker0x01 has been published: "
-            + site_url
+            + SITE_URL
             + cve
             + "\r\n\r\n"
             + h1_url
@@ -114,9 +118,8 @@ def tweet_cves():
             twitta.update_status(tweet)
             print(tweet)
             sleep(2)
-        except tweepy.TweepError as e:
-            print('Twitter error: ', e.response.text)
-            pass
+        except tweepy.errors.HTTPException as err:
+            print("Twitter error: ", err.response.text)
 
 
 if __name__ == "__main__":
