@@ -19,6 +19,7 @@ consumer_key = os.environ.get("API_KEY")
 consumer_secret_key = os.environ.get("API_SECRET_KEY")
 access_token = os.environ.get("ACCESS_TOKEN")
 access_token_secret = os.environ.get("ACCESS_TOKEN_SECRET")
+nvd_key = os.environ.get("NVD_KEY")
 
 # Authenticate to Twitter
 auth = tweepy.OAuthHandler(consumer_key, consumer_secret_key)
@@ -47,7 +48,9 @@ params = {
     "startIndex": 0,  # start at most recent CVEs
     "resultsPerPage": 50,  # page big enough for all results at once
     "pubStartDate": nvd_datetime,
+    # "pubStartDate": nvd_datetime, # testing
     "pubEndDate": nvd_datetime_now,
+    # "pubEndDate": nvd_datetime_now, # testing
 }
 
 
@@ -92,7 +95,7 @@ def get_cves():
     except requests.exceptions.Timeout as errt:
         print("Timeout Error:", errt)
     except requests.exceptions.RequestException as err:
-        print("OOps: Something Else", err)
+        print("Oops: Something Else", err)
 
     # parse the json response
     global MASTER_DICT
