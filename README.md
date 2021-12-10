@@ -1,2 +1,2 @@
 # h1cve
-A Twitter bot for posting new CVEs that reference HackerOne reports
+A Twitter bot that posts new CVEs with a HackerOne report as a reference (@HackerOneCVE)
