@@ -1,6 +1,3 @@
-"""
-Script that pulls H1 related results from NVD references and post them on Twitter
-"""
 import os
 from datetime import datetime, timedelta
 from time import sleep
@@ -15,11 +12,11 @@ from extract import json_extract
 load_dotenv()
 
 # try the OS variables (just in case for Heroku)
+nvd_key = os.environ.get("NVD_KEY")
 consumer_key = os.environ.get("API_KEY")
 consumer_secret_key = os.environ.get("API_SECRET_KEY")
 access_token = os.environ.get("ACCESS_TOKEN")
 access_token_secret = os.environ.get("ACCESS_TOKEN_SECRET")
-nvd_key = os.environ.get("NVD_KEY")
 
 # Authenticate to Twitter
 auth = tweepy.OAuthHandler(consumer_key, consumer_secret_key)
@@ -29,6 +26,7 @@ twitta = tweepy.API(auth)
 # get current time and adjust timedelta to script cron period
 datetime_now = datetime.now()
 adjusted_date_time = datetime_now - timedelta(hours=1)
+# adjusted_date_time = datetime_now - timedelta(days=7) # testing
 
 nvd_datetime = adjusted_date_time.strftime(
     "%Y-%m-%dT%H:%M:%S:000 UTC-05:00"
@@ -48,9 +46,7 @@ params = {
     "startIndex": 0,  # start at most recent CVEs
     "resultsPerPage": 50,  # page big enough for all results at once
     "pubStartDate": nvd_datetime,
-    # "pubStartDate": nvd_datetime, # testing
     "pubEndDate": nvd_datetime_now,
-    # "pubEndDate": nvd_datetime_now, # testing
 }
 
 
@@ -138,4 +134,4 @@ if __name__ == "__main__":
         except Exception as exc:
             print(exc)
         # check every hour
-        sleep(60 * 60)
+        sleep(3600)
