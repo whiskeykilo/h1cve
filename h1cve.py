@@ -25,8 +25,8 @@ twitta = tweepy.API(auth)
 
 # get current time and adjust timedelta to script cron period
 datetime_now = datetime.now()
-# adjusted_date_time = datetime_now - timedelta(hours=1)
-adjusted_date_time = datetime_now - timedelta(days=7)  # testing
+adjusted_date_time = datetime_now - timedelta(hours=1)
+# adjusted_date_time = datetime_now - timedelta(days=7)  # testing
 
 nvd_datetime = adjusted_date_time.strftime(
     "%Y-%m-%dT%H:%M:%S:000 UTC-05:00"
@@ -97,9 +97,8 @@ def get_cves():
     global MASTER_DICT
     id_list = json_extract(response.json(), "ID")
     url_list = json_extract(response.json(), "url")
-    severity = json_extract(response.json(), "severity")
     h1_url_list = [i for i in url_list if "hackerone" in i]
-    MASTER_DICT = dict(zip(id_list, h1_url_list, severity))
+    MASTER_DICT = dict(zip(id_list, h1_url_list))
     print("end get_CVEs\n")
 
 
@@ -109,12 +108,10 @@ def tweet_cves():
     :return: It has no return value
     """
     print("printing CVEs found here:\n")
-    for cve, h1_url, severity in MASTER_DICT.items():
+    for cve, h1_url in MASTER_DICT.items():
         tweet = (
             cve
-            + " reported via @Hacker0x01 with severity "
-            + severity
-            + " has been published: "
+            + " reported via @Hacker0x01 has been published: "
             + SITE_URL
             + cve
             + "\r\n\r\n"
