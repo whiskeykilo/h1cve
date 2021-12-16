@@ -25,8 +25,8 @@ twitta = tweepy.API(auth)
 
 # get current time and adjust timedelta to script cron period
 datetime_now = datetime.now()
-adjusted_date_time = datetime_now - timedelta(hours=1)
-# adjusted_date_time = datetime_now - timedelta(days=7) # testing
+# adjusted_date_time = datetime_now - timedelta(hours=1)
+adjusted_date_time = datetime_now - timedelta(days=7)  # testing
 
 nvd_datetime = adjusted_date_time.strftime(
     "%Y-%m-%dT%H:%M:%S:000 UTC-05:00"
