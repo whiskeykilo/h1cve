@@ -64,8 +64,8 @@ def poll_nvd():
     datetime_now = datetime.now()
 
     # adjust timedelta to script cron period
-    adjusted_date_time = datetime_now - timedelta(hours=1)  # prod
-    # adjusted_date_time = datetime_now - timedelta(days=10)  # test
+    # adjusted_date_time = datetime_now - timedelta(hours=1)  # prod
+    adjusted_date_time = datetime_now - timedelta(days=10)  # test
 
     nvd_datetime = adjusted_date_time.strftime(
         "%Y-%m-%dT%H:%M:%S:000 UTC-05:00"
