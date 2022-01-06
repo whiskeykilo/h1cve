@@ -22,12 +22,6 @@ access_token_secret = os.environ.get("TWITTER_ACCESS_TOKEN_SECRET")
 auth = tweepy.OAuthHandler(consumer_key, consumer_secret_key)
 auth.set_access_token(access_token, access_token_secret)
 
-# Use to adjust the last_modified_date filter (default last 60 seconds)
-minutes = int(os.environ.get("MINUTES"))
-
-# Adjust the following two to equal 600 seconds (min Scheduler job) - SLEEP in seconds
-sleep = int(os.environ.get("SLEEP"))
-
 # National Vulnerability Database (NVD) API documented here: https://bit.ly/3bqcxYk
 API_URL = "https://services.nvd.nist.gov/rest/json/cves/1.0"
 SITE_URL = "https://nvd.nist.gov/vuln/detail/"
@@ -136,7 +130,7 @@ def tweet_cves():
             + h1_url
         )
         try:
-            # twitta.update_status(tweet)
+            twitta.update_status(tweet)
             print(tweet + "\n\n" + "-------------------" + "\n")
             sleep(1)
         except tweepy.errors.HTTPException as err:
