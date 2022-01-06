@@ -21,6 +21,7 @@ access_token_secret = os.environ.get("TWITTER_ACCESS_TOKEN_SECRET")
 # load Twitter variables
 auth = tweepy.OAuthHandler(consumer_key, consumer_secret_key)
 auth.set_access_token(access_token, access_token_secret)
+twitta = tweepy.API(auth)
 
 # National Vulnerability Database (NVD) API documented here: https://bit.ly/3bqcxYk
 API_URL = "https://services.nvd.nist.gov/rest/json/cves/1.0"
@@ -52,14 +53,6 @@ def requests_retry_session(
     return session
 
 
-def login():
-    """
-    Authenticate to Twitter
-    :return: It has no return value
-    """
-    twitta = tweepy.API(auth)
-
-
 def poll_nvd():
     """
     This function pulls CVEs from NVD in the specified time period and order
@@ -71,8 +64,8 @@ def poll_nvd():
     datetime_now = datetime.now()
 
     # adjust timedelta to script cron period
-    # adjusted_date_time = datetime_now - timedelta(hours=1) # prod
-    adjusted_date_time = datetime_now - timedelta(days=10)  # test
+    adjusted_date_time = datetime_now - timedelta(hours=1)  # prod
+    # adjusted_date_time = datetime_now - timedelta(days=10)  # test
 
     nvd_datetime = adjusted_date_time.strftime(
         "%Y-%m-%dT%H:%M:%S:000 UTC-05:00"
@@ -140,7 +133,6 @@ def tweet_cves():
 if __name__ == "__main__":
     while True:
         try:
-            login()
             poll_nvd()
             tweet_cves()
             print("\ndone")
