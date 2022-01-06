@@ -135,7 +135,7 @@ if __name__ == "__main__":
         try:
             poll_nvd()
             tweet_cves()
-            print("\ndone")
+            print("\ndone\n\n")
         except Exception as exc:
             print(exc)
         # check every hour
