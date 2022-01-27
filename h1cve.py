@@ -4,9 +4,8 @@ from time import sleep
 import requests
 from dotenv import load_dotenv
 import tweepy
-from requests.adapters import HTTPAdapter
-from urllib3.util import Retry
 from extract import json_extract
+from retry import retry
 
 # get environment variables from .env
 load_dotenv()
@@ -28,31 +27,7 @@ API_URL = "https://services.nvd.nist.gov/rest/json/cves/1.0"
 SITE_URL = "https://nvd.nist.gov/vuln/detail/"
 
 
-def requests_retry_session(
-    retries=3,
-    backoff_factor=0.3,
-    status_forcelist=(500, 502, 504),
-    session=None,
-):
-    """
-    Retry request function. NVD API can be rather unresponsive:
-    https://www.peterbe.com/plog/best-practice-with-retries-with-requests
-    :return: Returns the session details
-    """
-    session = session or requests.Session()
-    retry = Retry(
-        total=retries,
-        read=retries,
-        connect=retries,
-        backoff_factor=backoff_factor,
-        status_forcelist=status_forcelist,
-    )
-    adapter = HTTPAdapter(max_retries=retry)
-    session.mount("http://", adapter)
-    session.mount("https://", adapter)
-    return session
-
-
+@retry(Exception, delay=600, backoff=1.1)
 def poll_nvd():
     """
     This function pulls CVEs from NVD in the specified time period and order
@@ -84,11 +59,12 @@ def poll_nvd():
         "pubEndDate": nvd_datetime_now,
     }
     try:
-        response = requests_retry_session().get(
-            API_URL, params=params, timeout=(3.05, 10)
-        )
+
+        response = requests.get(API_URL, params=params)
         response.raise_for_status()
         print("NVD API status code: " + str(response.status_code) + "\n")
+        if str(response.status_code) != "200":
+            raise Exception("NVD fucking up")
     except requests.exceptions.HTTPError as errh:
         print("HTTP Error " + str(response.status_code) + ":\n", errh)
     except requests.exceptions.ConnectionError as errc:
