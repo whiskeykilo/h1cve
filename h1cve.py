@@ -39,8 +39,8 @@ def poll_nvd():
     datetime_now = datetime.now()
 
     # adjust timedelta to script cron period
-    adjusted_date_time = datetime_now - timedelta(hours=1)  # prod
-    # adjusted_date_time = datetime_now - timedelta(days=10)  # test
+    adjusted_date_time = datetime_now - timedelta(days=1)  # prod
+    # adjusted_date_time = datetime_now - timedelta(days=20)  # test
 
     nvd_datetime = adjusted_date_time.strftime(
         "%Y-%m-%dT%H:%M:%S:000 UTC-05:00"
@@ -107,12 +107,12 @@ def tweet_cves():
 
 
 if __name__ == "__main__":
-    while True:
-        try:
-            poll_nvd()
-            tweet_cves()
-            print("\ndone\n\n")
-        except Exception as exc:
-            print(exc)
+    # while True:
+    try:
+        poll_nvd()
+        tweet_cves()
+        print("\ndone\n\n")
+    except Exception as exc:
+        print(exc)
         # check every hour
-        sleep(3600)
+        # sleep(3600)
