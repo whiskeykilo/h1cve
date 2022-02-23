@@ -107,12 +107,9 @@ def tweet_cves():
 
 
 if __name__ == "__main__":
-    # while True:
     try:
         poll_nvd()
         tweet_cves()
         print("\ndone\n\n")
     except Exception as exc:
         print(exc)
-        # check every hour
-        # sleep(3600)
